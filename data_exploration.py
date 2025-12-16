@@ -91,21 +91,43 @@ print(high_corr_pairs)
 
 ## Checker les distributions après différente normalisation
 #check the distribution of each parameters
-for col in standardized_df.columns:
-    # Affichage de l'histogramme pour chaque colonne
-    plt.hist(standardized_df[col], bins=30, color='skyblue', edgecolor='black')  # dropna() pour ignorer les valeurs manquantes
-    plt.title(f"Distribution de la colonne {col} standardisée")
-    plt.xlabel(col)
-    plt.ylabel('Fréquence')
-    plt.show()
+# for col in standardized_df.columns:
+#     # Affichage de l'histogramme pour chaque colonne
+#     plt.hist(standardized_df[col], bins=30, color='skyblue', edgecolor='black')  # dropna() pour ignorer les valeurs manquantes
+#     plt.title(f"Distribution de la colonne {col} standardisée")
+#     plt.xlabel(col)
+#     plt.ylabel('Fréquence')
+#     plt.show()
 
-for col in min_max_scaled_df.columns:
-    #Affichage de l'histogramme pour chaque colonne du df normalisé selon min max
-    plt.hist(min_max_scaled_df[col], bins = 30, color='red',edgecolor='black')
-    plt.title(f"Distribution de la colonne {col} min max normalisée")
-    plt.xlabel(col)
-    plt.ylabel('Fréquence')
-    plt.show()
+# for col in min_max_scaled_df.columns:
+#     #Affichage de l'histogramme pour chaque colonne du df normalisé selon min max
+#     plt.hist(min_max_scaled_df[col], bins = 30, color='red',edgecolor='black')
+#     plt.title(f"Distribution de la colonne {col} min max normalisée")
+#     plt.xlabel(col)
+#     plt.ylabel('Fréquence')
+#     plt.show()
 
 ## Mise en place et comparaisons de modèles avec des données standardisées
-#Remplacement d
+from sklearn import linear_model
+model = linear_model.LogisticRegression()
+
+print(standardized_df.head())
+
+x_train = standardized_df.drop("label",axis=1)
+y_train = standardized_df["label"]
+
+df_test = pd.read_csv("dataset/train.csv")
+df_sub = pd.read_csv("dataset/sample_submission.csv")
+
+for idx, row in df_sub.iterrows() :
+    if row["label"] == "M":
+        df_sub.loc[idx,"label"] = 1
+    else :
+        df_sub.loc[idx,"label"] = 0
+
+model.fit(x_train,y_train)
+
+x_test = df_test.drop("id",axis=1)
+y_test = df_test["label"]
+
+y_predict=model.predict(x_test)
